@@ -39,7 +39,10 @@ This console application converts Markdown files into HTML fragments. It provide
 
    > **Note:** If you omit the `--out` argument, the HTML output will throw exception.
 
-## Revert commit
+## Revert commits
 
 ### [Commit with failed build due failed tests](https://github.com/Max-Homishchak/MTRPS_labs/commit/861ed9c2a79499f6ce993416bba9b5ab667beb51)
 ### [Commit with fixed build due fixed unit test](https://github.com/Max-Homishchak/MTRPS_labs/commit/6b46023812fbcf78b35563c0b247a65eee2a197a)
+
+## Summary
+unit tests are usefull when you want to test separate parts of code, not whole business flow, they helps to avoid multiple bugs before they were even deployed to env.  
