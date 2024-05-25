@@ -6,6 +6,7 @@ This console application converts Markdown files into HTML fragments. It provide
 
 ## Prerequisites
 - **Java:** Ensure you have Java installed on your system. If not, you can download and install Java from [Java's official website](https://www.java.com/download/).
+- **Maven:** Ensure you have Maven installed on your system. If not, you can download and install it from [Maven Apache Project](https://maven.apache.org/download.cgi).
 
 ## Installation
 1. Clone the repository from GitHub:
@@ -28,9 +29,17 @@ This console application converts Markdown files into HTML fragments. It provide
       ```bash
       java Main /path/to/input_file.md --out /path/to/output_file.html
       ```
+       - To Run tests:
+      ```bash
+      mvn test
+      //or
+      mvn clean install   //will clean, rebuild and run unit tests for whole project)
+      ```
+    
 
    > **Note:** If you omit the `--out` argument, the HTML output will throw exception.
 
 ## Revert commit
 
-### [Revert commit](https://github.com/Max-Homishchak/MTRPS_labs/commit/4d029bb45411b5a8a2ae62f0446ab86539a3d4fd)
+### [Commit with failed build due failed tests](https://github.com/Max-Homishchak/MTRPS_labs/commit/861ed9c2a79499f6ce993416bba9b5ab667beb51)
+### [Commit with fixed build due fixed unit test](https://github.com/Max-Homishchak/MTRPS_labs/commit/6b46023812fbcf78b35563c0b247a65eee2a197a)
