@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "CI-setup" ]
+    branches: [ "master", "CI-setup" ]
 
 jobs:
   build:
