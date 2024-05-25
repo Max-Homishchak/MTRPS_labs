@@ -89,7 +89,7 @@ public class HtmlGeneratorService {
         return markdownText;
     }
 
-    private String convertToHtml(String markdownText) {
+    public String convertToHtml(String markdownText) {
         markdownText = markdownText.replaceAll("\\*\\*(.*?)\\*\\*", "<b>$1</b>")
                 .replaceAll("\\_(.*?)\\_", "<i>$1</i>")
                 .replaceAll("(?s)```(.*?)```", "<pre>$1</pre>")
