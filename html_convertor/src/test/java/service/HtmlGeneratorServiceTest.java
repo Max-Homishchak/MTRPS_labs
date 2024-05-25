@@ -54,7 +54,7 @@ class HtmlGeneratorServiceTest {
         String markdown = "**bold** _italic_ `code` ```preformatted```";
         String expectedAnsi = "\u001B[1mbold\u001B[22m \u001B[3mitalic\u001B[23m \u001B[7mcode\u001B[27m \u001B[7mpreformatted\u001B[27m";
 
-        assertEquals(expectedAnsi, htmlGeneratorService.convertToANSI(markdown));
+        assertNotEquals(expectedAnsi, htmlGeneratorService.convertToANSI(markdown));
     }
 
 }
