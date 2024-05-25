@@ -5,37 +5,57 @@ import java.io.*;
 public class HtmlGeneratorService {
 
     private static final String OUT_FLAG = "--out";
+    private static final String FORMAT_FLAG = "--format";
+    private static final String ANSI_FORMAT = "ansi";
+    private static final String HTML_FORMAT = "html";
 
     public void generate(String[] inputArgs) {
         if (inputArgs.length < 1) {
-            throw new RuntimeException("Usage: MarkdownConverter <input_file> [--out <output_file>]");
+            throw new RuntimeException("Usage: MarkdownConverter <input_file> [--out <output_file>] [--format <output_format>]");
         }
 
-        String inputFile = inputArgs[0];
+        String inputFile = null;
         String outputFile = null;
+        String outputFormat = null;
 
-        if (inputArgs.length > 2 && OUT_FLAG.equals(inputArgs[1])) {
-            outputFile = inputArgs[2];
+        for (int i = 0; i < inputArgs.length; i++) {
+            if (OUT_FLAG.equals(inputArgs[i]) && ++i < inputArgs.length) {
+                outputFile = inputArgs[i];
+            } else if (FORMAT_FLAG.equals(inputArgs[i]) && ++i < inputArgs.length) {
+                outputFormat = inputArgs[i];
+            } else {
+                inputFile = inputArgs[i];
+            }
+        }
+
+        if (inputFile == null) {
+            throw new RuntimeException("Input file is missing.");
         }
 
         try {
-            processMarkdownTransaction(inputFile, outputFile);
+            processMarkdownTransaction(inputFile, outputFile, outputFormat);
         } catch (IOException e) {
             throw new RuntimeException("Error reading or writing file: " + e.getMessage());
         }
-
     }
 
-    private void processMarkdownTransaction(String inputFile, String outputFile) throws IOException {
+    private void processMarkdownTransaction(String inputFile, String outputFile, String outputFormat) throws IOException {
         String markdownText = readMarkdownFile(inputFile);
-        String htmlText = convertToHtml(markdownText);
+        String outputText = convertToFormat(markdownText, outputFormat);
         if (outputFile != null) {
-            writeHtmlToFile(htmlText, outputFile);
+            writeToFile(outputText, outputFile, outputFormat);
         } else {
-            System.out.println(htmlText);
+            printResultToConsul(outputFormat, outputText);
         }
     }
 
+    private void printResultToConsul(String outputFormat, String outputText) {
+        if (ANSI_FORMAT.equalsIgnoreCase(outputFormat)) {
+            printFormattedText(outputText, new PrintWriter(System.out));
+        } else {
+            System.out.println(outputText);
+        }
+    }
 
     private String readMarkdownFile(String inputFile) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -48,10 +68,25 @@ public class HtmlGeneratorService {
         return sb.toString();
     }
 
-    private void writeHtmlToFile(String htmlText, String outputFile) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-            writer.write(htmlText);
+    private void writeToFile(String outputText, String outputFile, String outputFormat) throws IOException {
+        if (ANSI_FORMAT.equalsIgnoreCase(outputFormat)) {
+            try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)))) {
+                printFormattedText(outputText, writer);
+            }
+        } else {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+                writer.write(outputText);
+            }
         }
+    }
+
+    private String convertToFormat(String markdownText, String outputFormat) {
+        if (ANSI_FORMAT.equalsIgnoreCase(outputFormat)) {
+            markdownText = convertToANSI(markdownText);
+        } else if (HTML_FORMAT.equalsIgnoreCase(outputFormat)) {
+            markdownText = convertToHtml(markdownText);
+        }
+        return markdownText;
     }
 
     private String convertToHtml(String markdownText) {
@@ -62,5 +97,18 @@ public class HtmlGeneratorService {
                 .replaceAll("```(.*?)```", "<pre>$1</pre>")
                 .replaceAll("(?m)\\n\\s*\\n|\\n{2,}", "</p>\n\n<p>");
         return markdownText;
+    }
+
+    public String convertToANSI(String markdownText) {
+        markdownText = markdownText.replaceAll("\\*\\*(.*?)\\*\\*", "\u001B[1m$1\u001B[22m")
+                .replaceAll("\\_(.*?)\\_", "\u001B[3m$1\u001B[23m")
+                .replaceAll("(?s)```(.*?)```", "\u001B[7m$1\u001B[27m")
+                .replaceAll("\\`(.*?)\\`", "\u001B[7m$1\u001B[27m");
+        return markdownText;
+    }
+
+    private void printFormattedText(String outputText, PrintWriter writer) {
+        writer.println(outputText);
+        writer.flush();
     }
 }
